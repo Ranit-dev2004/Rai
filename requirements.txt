@@ -1,0 +1,12 @@
+gTTS
+playsound==1.2.2
+SpeechRecognition
+wikipedia
+pywhatkit
+pystray
+Pillow
+openai
+opencv-python
+deepface
+tensorflow
+keras
