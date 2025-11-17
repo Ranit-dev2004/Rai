@@ -1,11 +1,11 @@
-import threading
+import threading  # <-- THE MISSING IMPORT IS NOW ADDED
 import time
 import random
 import datetime
 from rai_voice import speak, get_greeting
 from rai_listener import passive_listener
 from rai_tray import start_tray_icon
-from rai_emotion import identity_detector
+
 MORNING_MESSAGES = [
     "Good morning, sir! You have a full day ahead. Shall I open your work folder to get started?",
     "Rise and shine! Don’t forget your morning meeting — want me to remind you?",
@@ -54,7 +54,6 @@ def main():
     threading.Thread(target=speak, args=(message,), daemon=True).start()
 
     # Start background threads
-    threading.Thread(target=identity_detector, daemon=True).start()  # identity check only
     threading.Thread(target=start_tray_icon, daemon=True).start()
     threading.Thread(target=passive_listener, daemon=True).start()
 

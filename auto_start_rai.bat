@@ -1,5 +1,6 @@
 @echo off
-cd /d "F:\Work - Copy\Rai"
+cd /d "%~dp0"
+echo Starting Rai from %cd%...
 call .venv\Scripts\activate
 python rai_main.py
 pause

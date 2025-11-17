@@ -2,7 +2,6 @@ import os
 import webbrowser
 from rai_voice import speak, recognize_speech_or_manual_input
 
-# Find installed apps by Start Menu shortcuts
 def find_installed_apps():
     start_menu_paths = [
         os.environ["PROGRAMDATA"] + r"\Microsoft\Windows\Start Menu\Programs",
@@ -19,8 +18,6 @@ def find_installed_apps():
                     apps.append( (app_name.lower(), app_path) )
     
     return apps
-
-# Open app by name
 def open_software(app_name):
     installed_apps = find_installed_apps()
     found = False
@@ -41,21 +38,17 @@ def open_software(app_name):
         else:
             speak("Okay, skipping download.")
 
-# Process user command
 def process_user_command(user_command):
     user_command = user_command.lower()
     
-    # Open File Manager
     if "file manager" in user_command or "explorer" in user_command or "my files" in user_command:
         speak("Opening File Manager...")
         os.system("explorer")
     
-    # Open Work Folder (change this path to your actual work folder!)
     elif "work folder" in user_command:
         work_folder = r"C:\Users\Niladri\Documents\Work"
         speak("Opening Work Folder...")
         os.startfile(work_folder)
     
-    # Otherwise try to open app
     else:
         open_software(user_command)

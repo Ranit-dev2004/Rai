@@ -4,11 +4,11 @@ import asyncio
 import edge_tts
 import tempfile
 import threading
-from playsound import playsound  # ✅ replace pydub playback
+import os      
+import pygame  
 
 ASSISTANT_NAME = "Rai"
 
-# --- Global loop for async TTS ---
 loop = asyncio.new_event_loop()
 
 def start_loop():
@@ -17,7 +17,7 @@ def start_loop():
 
 threading.Thread(target=start_loop, daemon=True).start()
 
-# --- Async TTS with Edge voices ---
+pygame.mixer.init() 
 async def speak_async(text: str):
     try:
         communicate = edge_tts.Communicate(text, "en-US-AriaNeural")
@@ -27,17 +27,21 @@ async def speak_async(text: str):
             if chunk["type"] == "audio":
                 mp3_bytes += chunk["data"]
 
-        # Save to temp file and play
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as f:
             f.write(mp3_bytes)
             temp_path = f.name
 
-        playsound(temp_path)  # ✅ much more reliable on Windows
+        pygame.mixer.music.load(temp_path)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
+        
+        pygame.mixer.music.unload()
+        os.remove(temp_path)
 
     except Exception as e:
         print(f"Error in speak_async: {e}")
 
-# --- Public speak function ---
 def speak(text: str):
     print(f"{ASSISTANT_NAME}: {text}")
     try:
@@ -45,7 +49,6 @@ def speak(text: str):
     except Exception as e:
         print(f"Error scheduling speak: {e}")
 
-# --- Greeting based on time ---
 def get_greeting() -> str:
     hour = datetime.datetime.now().hour
     if hour < 12:
@@ -55,7 +58,6 @@ def get_greeting() -> str:
     else:
         return "Good evening! Ready to serve you."
 
-# --- Voice recognition ---
 def recognize_speech_or_manual_input() -> str:
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
@@ -67,7 +69,7 @@ def recognize_speech_or_manual_input() -> str:
             print(f"You said: {command}")
             return command
         except sr.UnknownValueError:
-            speak("Sorry, I didn't catch that. Please type your command.")
+            speak("Please type your command.")
             return input("Type your command: ").strip().lower()
         except sr.RequestError:
             speak("Sorry, there was an issue with the speech service. Please type your command.")
